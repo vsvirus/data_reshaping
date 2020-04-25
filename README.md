@@ -1,4 +1,13 @@
 # data_reshaping
+db_stateV2.py
+uses the function in dummy_data.py to create 100 patients and then 
+the performs the same analysis that db_state.py.
+It creates a variable called "choices" for the dashboard method
+"get_choices" and a variable called "variables" for the dashboard method
+"get_variables"
+
+
+
 db_state.py
 
 To get all names of variables and their categories or max and mins, and
