@@ -56,7 +56,7 @@ def dummy_data():
         
         n_rx = randint(0,2)
         for j in range(n_rx):
-            pneumonia = [None,randint(0,2)]
+            pneumonia = [0,randint(0,2)]
             rx = {'_id':str(i), 'timestamp':datetime.now()-relativedelta(days=22/(j+1)),
                   'has_pneumonia':boolean[randint(0,1)], 'pneumonia_subtype':pneumonia[randint(0,1)]}
             chest_rxs.append(rx)
@@ -66,19 +66,12 @@ def dummy_data():
         for j in range(n_cu):
             #If i dont put it here, no new random numbers are generated
             
-            blod_preassure = [None,randint(120,160)]
-            heart_rate = [None,randint(50,120)]
-            respiratory_rate = [None,randint(15,30)]
-            o2_saturation_percent = [None,randint(60,100)]
-            o2_device_specifier = [None,randint(1,10)]
-            
-            
             cu = {'_id': str(i), 'timestamp':datetime.now()-relativedelta(days=22/(j+1)) ,'is_icu_candidate':boolean[randint(0,1)], 
-                  'temperature_celsius':randint(35,42), 'blood_pressure_systolic':blod_preassure[randint(0,1)],
-                  'blood_pressure_diastolic':blod_preassure[randint(0,1)], 'heart_rate': heart_rate[randint(0,1)],
-                  'respiratory_rate':respiratory_rate[randint(0,1)],
-                  'o2_saturation_percent':o2_saturation_percent[randint(0,1)], 'o2_device':randint(0,2),
-                  'o2_device_specifier':o2_device_specifier[randint(0,1)],
+                  'temperature_celsius':randint(35,42), 'blood_pressure_systolic':randint(120,160),
+                  'blood_pressure_diastolic':randint(120,160), 'heart_rate': randint(50,120),
+                  'respiratory_rate':randint(15,30),
+                  'o2_saturation_percent':randint(60,100), 'o2_device':randint(0,2),
+                  'o2_device_specifier':randint(1,10),
                   'has_good_o2_device_adherence':boolean[randint(0,1)], 'needs_prone_position':boolean[randint(0,1)],
                   'has_symptom_cough':boolean[randint(0,1)], 'has_symptom_dyspena':boolean[randint(0,1)],
                   'has_symptom_anosmia':boolean[randint(0,1)],'has_symptom_ageusia':boolean[randint(0,1)],
@@ -92,6 +85,7 @@ def dummy_data():
                   'has_complication_liver_impairment':boolean[randint(0,1)],'has_complication_arritmia':boolean[randint(0,1)],
                   'has_complication_heart_failure':boolean[randint(0,1)],'has_complication_infection':boolean[randint(0,1)],
                   'other_complications':'dierna'}
+            clinical_updates.append(cu)
             clinical_updates.append(cu)
         
         n_tests = randint(1,10)
@@ -430,7 +424,7 @@ for param in clinical_params_copy:
 
 # Creating a dictionary with the informatio in the desired way for the dashboard
 #droping parameters
-info_to_be_removed = ['__v','chest_rx','lab_tests','previous_conditions','sars_cov2_test','clinical_update']
+info_to_be_removed = ['__v','chest_rx','lab_tests','previous_conditions','sars_cov2_test','clinical_update','drug']
 cpy =  info.copy()
 for i in range(len(cpy)):
     if cpy[i] in info_to_be_removed:
@@ -462,12 +456,13 @@ for j in range(len(Lab)):
         choices[var_name] = {'type':Type_lab[j], 'value':Max_lab[j]}
         
 for j in range(len(clinical_params)):
-    var_name = 'Clinico.' + clinical_params[j]
-    if Type_clinic[j] == 'tc_num' or Type_clinic[j] == 'tv_num' or Type_clinic[j] == 'tc_bool' or Type_clinic[j] == 'tv_bool':
-        choices[var_name] = {'type':Type_clinic[j], 'value':[min_clinic[j],max_clinic[j]]}
-        
-    else: #Categories ---- 'events still not considered'
-        choices[var_name] = {'type':Type_clinic[j], 'value':max_clinic[j]}
+    if clinical_params[j] != "_id" and clinical_params[j] != "timestamp":
+        var_name = 'Clinico.' + clinical_params[j]
+        if Type_clinic[j] == 'tc_num' or Type_clinic[j] == 'tv_num' or Type_clinic[j] == 'tc_bool' or Type_clinic[j] == 'tv_bool':
+            choices[var_name] = {'type':Type_clinic[j], 'value':[min_clinic[j],max_clinic[j]]}
+            
+        else: #Categories ---- 'events still not considered'
+            choices[var_name] = {'type':Type_clinic[j], 'value':max_clinic[j]}
 
 var_name = 'Clinico.Sintomas'        
 choices[var_name] = {'type':'tc_cat', 'value':symptoms}
