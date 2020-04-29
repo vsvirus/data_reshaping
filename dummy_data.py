@@ -15,7 +15,7 @@ boolean = [True,False]
 prev_contitions = ['diabetes','smoker','cancer', 'colesterol']
 parametros = ['uno','dos','tres']
 multipliers = [2,5,10]
-symptoms1 = ['dyspena','anosmia','ageusia']
+symptoms1 = ['dyspnea','anosmia','ageusia']
 symptoms2 = ['rinorrea','dizziness','nausea']
 symptoms3 = ['diarrhoea','headache','anorexia','articular_pain']
 symptoms4 = ['astenia','chest_pain','palpitations']
@@ -65,11 +65,11 @@ def dummy_data():
         n_cu = randint(1,20)
         for j in range(n_cu):
             cu = {'_id': str(i), 'timestamp':datetime.now()-relativedelta(days=22/(j+1)) ,'is_icu_candidate':boolean[randint(0,1)], 
-                  'temperature_celsius':randint(35,42), 'blood_pressure_systolic':blod_preassure[randint(0,1)],
-                  'blood_pressure_diastolic':blod_preassure[randint(0,1)], 'heart_rate': heart_rate[randint(0,1)],
-                  'respiratory_rate':respiratory_rate[randint(0,1)],
-                  'o2_saturation_percent':o2_saturation_percent[randint(0,1)], 'o2_device':randint(0,2),
-                  'o2_device_specifier':o2_device_specifier[randint(0,1)],
+                  'temperature_celsius':randint(35,42), 'blood_pressure_systolic':randint(120,160),
+                  'blood_pressure_diastolic':randint(120,160), 'heart_rate': randint(50,120),
+                  'respiratory_rate':randint(15,30),
+                  'o2_saturation_percent':randint(60,100), 'o2_device':randint(0,2),
+                  'o2_device_specifier':randint(1,10),
                   'has_good_o2_device_adherence':boolean[randint(0,1)], 'needs_prone_position':boolean[randint(0,1)],
                   'has_symptom_cough':boolean[randint(0,1)], 'has_symptom_dyspena':boolean[randint(0,1)],
                   'has_symptom_anosmia':boolean[randint(0,1)],'has_symptom_ageusia':boolean[randint(0,1)],
@@ -106,8 +106,6 @@ def dummy_data():
             pc = {'_id': '5e8f42eb854f7f49880906b6','name': prev_contitions[randint(0,3)],'extra_info': {'insulin_units': 2},'comments': 'bla bla'}
             previous_conditions.append(pc)
     
-    
-    
         patient = {'_id': str(i),
                      'health_provider_id': randint(1,3),
                      'gender': randint(1,3),
@@ -130,7 +128,11 @@ def dummy_data():
                      '__v': 0}
         
         data.append(patient)
-        
+    
     return data
 
 DD = dummy_data()
+
+archivo = open(r"C:\Users\jesus\Documents\VersusVirus\archivo.txt","w")
+archivo.write(str((DD)))
+archivo.close()
