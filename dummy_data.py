@@ -4,6 +4,7 @@ Created on Thu Apr 23 23:50:16 2020
 
 @author: Jesús S. Alegre
 """
+import json
 from random import randint, seed, random
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -51,8 +52,8 @@ def dummy_data():
         n_drugs = randint(0,2)
         for j in range(n_drugs):
             date = datetime.now()-relativedelta(days=22/(j+1))
-            drg = {'_id':str(i), 'date_start':date,
-                  'date_end':date + relativedelta(days=randint(1,2)), 
+            drg = {'_id':str(i), 'date_start':str(date),
+                  'date_end':str(date + relativedelta(days=randint(1,2))), 
                   'name':drogas[randint(0,4)], 'dose':randint(1,10),
                   'interval':randint(1,4)*3600}
             drugs.append(drg)
@@ -60,20 +61,20 @@ def dummy_data():
         
         n_sars = randint(0,2)
         for j in range(n_sars):
-            sars = {'_id':str(i),'timestamp':datetime.now()-relativedelta(days=22/(j+1)),
+            sars = {'_id':str(i),'timestamp':str(datetime.now()-relativedelta(days=22/(j+1))),
                   'result':result[randint(0,1)], 'test_type': cov_test[randint(0,2)]}
             sars_cov2_tests.append(sars)
         
         n_rx = randint(0,2)
         for j in range(n_rx):
-            rx = {'_id':str(i),'timestamp':datetime.now()-relativedelta(days=22/(j+1)),
+            rx = {'_id':str(i),'timestamp':str(datetime.now()-relativedelta(days=22/(j+1))),
                   'has_pneumonia':boolean[randint(0,1)], 'pneumonia_subtype':pneumonia[randint(0,2)], 'test_type':tipo_rx[randint(0,2)]}
             chest_rxs.append(rx)
         
         
         n_cu = randint(1,4)
         for j in range(n_cu):
-            cu = {'_id': str(i), 'timestamp':datetime.now()-relativedelta(days=22/(j+1)) ,'is_icu_candidate':boolean[randint(0,1)], 
+            cu = {'_id': str(i), 'timestamp':str(datetime.now()-relativedelta(days=22/(j+1))) ,'is_icu_candidate':boolean[randint(0,1)], 
                   'temperature_celsius':randint(35,42), 'blood_pressure_systolic':randint(120,160),
                   'blood_pressure_diastolic':randint(120,160), 'heart_rate': randint(50,120),
                   'respiratory_rate':randint(15,30), "glasgow_coma_scale_score":randint(10,20),
@@ -113,10 +114,10 @@ def dummy_data():
                      'health_provider_id': randint(1,3),
                      'gender': randint(1,3),
                      'ethnicity': ethnicity[randint(0,3)],
-                     'date_of_birth': datetime.now()-relativedelta(years=randint(5,85)),
-                     'date_of_first_symptoms': datetime.now()-relativedelta(days=randint(25,40)),
-                     'date_of_admission': datetime.now()-relativedelta(days=randint(0,10)),
-                     'date_of_discharge': discharge[randint(0,1)],
+                     'date_of_birth': str(datetime.now()-relativedelta(years=randint(5,85))),
+                     'date_of_first_symptoms': str(datetime.now()-relativedelta(days=randint(25,40))),
+                     'date_of_admission': str(datetime.now()-relativedelta(days=randint(0,10))),
+                     'date_of_discharge': str(discharge[randint(0,1)]),
                      'is_deceased': boolean[randint(0,1)],
                      'height_cm': randint(150, 200),
                      'weight_kg': randint(50, 100),
@@ -134,6 +135,9 @@ def dummy_data():
 
 DD = dummy_data()
 
-archivo = open(r"C:\Users\jesus\Documents\VersusVirus\archivo.txt","w")
+archivo = open("dummy_data.txt","w")
 archivo.write(str((DD)))
 archivo.close()
+
+with open('dummy_data.txt', 'w') as outfile:
+    json.dump(DD, outfile)
