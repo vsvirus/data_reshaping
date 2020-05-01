@@ -14,8 +14,7 @@ ethnicity = ['european', 'african', 'asian', 'other']
 discharge = [None,(datetime.now()-relativedelta(days=randint(10,20)))]
 boolean = [True,False]
 prev_contitions = ['diabetes','smoker','cancer', 'colesterol']
-parametros = ['uno','dos','tres']
-multipliers = [2,5,10]
+parametros = ['hemoglobine','leucocytes','haematocrit']
 symptoms1 = ['cough','dyspnea','anosmia','ageusia']
 symptoms2 = ['rinorrea','dizziness','nausea']
 symptoms3 = ['diarrhoea','headache','anorexia','articular_pain']
@@ -41,7 +40,7 @@ result = ['positive', 'negative']
 def dummy_data():
     data = []
     
-    for i in range (3):
+    for i in range (50):
         previous_conditions = [] # done
         test_paciente = [] # done
         clinical_updates = [] # done
