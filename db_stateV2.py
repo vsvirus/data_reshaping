@@ -4,7 +4,7 @@ Created on Thu Apr 30 19:38:20 2020
 
 @author: Jesús S. Alegre
 """
-
+import json
 import pandas as pd
 from random import randint, seed, random
 from datetime import datetime
@@ -258,6 +258,14 @@ for index, patient in DATA.iterrows():
             route = 'Radiologia'
             choices, variables = seeker(k,v,choices,route,'tv', variables)
             
+
+
+# Saving choices and variables as JSON in a txt file
+with open('choices.txt', 'w') as outfile:
+    json.dump(choices, outfile)
+    
+with open('variables.txt', 'w') as outfile:
+    json.dump(variables, outfile)
 
 
 
