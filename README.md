@@ -1,6 +1,7 @@
 # data_reshaping
 
 filter_creator.py
+
 takes the filter that the dashboard generates, and transforms it into MongoDB query
 that the endpoint can interpret.
 Same for variables selected.
@@ -11,6 +12,7 @@ in this side)
 
 
 db_stateV2.py
+
 uses the function in dummy_data.py to create 100 patients and then 
 the performs the same analysis that db_state.py.
 It creates a variable called "choices" for the dashboard method
