@@ -9,6 +9,10 @@ From the data that the DB sends back, a second level selection of variables is p
 presenting time variables in pd.Series format, and all the structure as DataFrame.
 (DB only allows by now a first level variable selection, thus, deeper selections are performed 
 in this side) (it reads "choices.txt" as support info)
+For the variables that are not of 1st level, a selection is done in the Python side, data
+is transformed in to the dataframes "dat" and "data_fs" (they are identical). These, new selections
+are appended to the dataframe, and in case of being time variant, they are appended as pd.Series for
+each patient.
 
 
 
