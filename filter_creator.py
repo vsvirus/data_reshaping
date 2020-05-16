@@ -12,6 +12,7 @@ import yaml
 
 # Filter coming from Dashboard
 filters = {'gender': ['female'], 'height_cm': [20, 200],'Amoxicilina':[0,10], 'hemoglobine': [10,30], 'Clinico.other_symptoms': ['locura']}
+filters = {'gender': ['female'], 'height_cm': [20, 200]}
 # 'Amoxicilina':[10,0], 'Clinico.other_symptoms': ['locura']
 #filters = {'gender': ['male']}
 
@@ -145,7 +146,8 @@ filtros_anidados =  {"$and": super_filtro}
 
 
 # Selected variables to display coming from Dashboard
-Variables = ['Basic.height_cm','Basic.gender','Amoxicilina', 'Morphin', 'hemoglobine', 'Basic.Condiciones_Previas']
+# Variables = ['Basic.height_cm','Basic.gender','Amoxicilina', 'Morphin', 'hemoglobine', 'Basic.Condiciones_Previas']
+Variables = ['temperature_celsius']
 
 v_lista = [] # to create the selection payload for the MongoDB query
 v_lista_2 = [] # to know which ones are 2nd order --> to be deleted at the end of the code
@@ -209,7 +211,7 @@ for sel in Variables:
 filter_MongroDB = json.dumps(filtros_anidados, separators=(',',':'))
 select_MongoDB = json.dumps(v_lista, separators=(',',':'))
 
-payload = {"filter": filter_MongroDB, "select":select_MongoDB}
+payload = {"filter": filter_MongroDB, "select": select_MongoDB}
 
 
 # Loading user and password from text file
@@ -304,7 +306,7 @@ for sel in v_post_sel:
         for index, patient in dat.iterrows():
             time_array = np.array([])
             value_array = np.array([])
-            clinics = patient['clinical_update']
+            clinics = patient['clinical_updates']
             for updates in clinics:
                 found =0
                 valor = None
@@ -314,7 +316,7 @@ for sel in v_post_sel:
                         time=val
 
                     if item == var_name:
-                        valor=v
+                        valor=val
                         found = 1
 
                 if found ==1 :

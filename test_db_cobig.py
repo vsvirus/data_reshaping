@@ -4,16 +4,19 @@ import yaml
 import json
 import pandas as pd
 import datetime
-
+from filter_creator import payload
 #%%
 with open('user_pass.yml', 'r') as f:
     access = yaml.load(f, Loader=yaml.FullLoader)
 
-pay = json.dumps({"$and":[{"gender":'male' }]}, separators=(',', ':'))
+# filter_used = {"$and":[{"gender":'female' }]}
+# selection = ['previous_conditions']
+# pay = json.dumps({'filter': filter_used, 'select': selection}, separators=(',', ':'))
 
 data_connection = requests.get('https://backend-demo.cobig19.com/patient',
                                auth=(access['user'], access['password']),
-                               params={"filter":pay})
+                               params=payload,
+                               )
 
 if data_connection.status_code == 200:
     patients = data_connection.json()
@@ -68,3 +71,5 @@ all_patients = all_patients.interpolate('linear')
 # Calculate quantiles
 quantiles = all_patients.quantile(q=[0.05, 0.5, 0.95], axis=1)
 # %%
+
+print('hello')
