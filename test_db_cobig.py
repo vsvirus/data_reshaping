@@ -4,17 +4,20 @@ import yaml
 import json
 import pandas as pd
 import datetime
-from filter_creator import payload
+# from filter_creator import payload
+
 #%%
 with open('user_pass.yml', 'r') as f:
     access = yaml.load(f, Loader=yaml.FullLoader)
 
-# filter_used = {"$and":[{"gender":'female' }]}
-# selection = ['previous_conditions']
-# pay = json.dumps({'filter': filter_used, 'select': selection}, separators=(',', ':'))
+filter_used = {"$and":[{"gender":'female' }]}
+selection = ['previous_conditions']
+payload = json.dumps({'filter': filter_used, 'select': selection}, separators=(',', ':'))
+
+x = requests.get("https://postman-echo.com/get?foo1=bar1&foo2=bar2")
 
 data_connection = requests.get('https://backend-demo.cobig19.com/patient',
-                               auth=(access['user'], access['password']),
+                               auth=("demo", "showtime4cobig19"),
                                params=payload,
                                )
 
