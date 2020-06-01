@@ -1,16 +1,19 @@
 def linearize(keys, choices, item, name):
     # Handle bad db
-    if name == '.previous_conditions':
+    if name == 'previous_conditions':
         handle_previous_conditions(keys, choices, item, name)
-    elif name == '.lab_tests':
+    elif name == 'lab_tests':
         handle_lab_test(keys, choices, item, name)
-    elif name == '.prescriptions':
+    elif name == 'prescriptions':
         handle_prescriptions(keys, choices, item, name)
 
     # Handle regular db
     elif isinstance(item, dict):
         for i in item:
-            linearize(keys, choices, item[i], '{}.{}'.format(name, i))
+            if len(name) == 0:
+                linearize(keys, choices, item[i], '{}'.format(i))
+            else:
+                linearize(keys, choices, item[i], '{}.{}'.format(name, i))
     elif isinstance(item, list):
         for i, el in enumerate(item):
             linearize(keys, choices, el, name)
@@ -18,17 +21,17 @@ def linearize(keys, choices, item, name):
         if isinstance(item, str):  # Categorical
             if name not in keys:
                 keys[name] = 'cat'
-                choices[name] = {'type': None, 'value': []}
+                choices[name] = {'type': None, 'value': [], 'path_to_value': name, 'path_to_timestamp': None, 'condition': None}
             if item not in choices[name]['value']:
                 choices[name]['value'].append(item)
         elif isinstance(item, bool):  # Boolean
             if name not in keys:
                 keys[name] = 'bool'
-                choices[name] = {'type': None, 'value': [True, False]}
+                choices[name] = {'type': None, 'value': [True, False], 'path_to_value': name, 'path_to_timestamp': None, 'condition': None}
         elif isinstance(item, float) or isinstance(item, int):  # Numeric
             if name not in keys:
                 keys[name] = 'num'
-                choices[name] = {'type': None, 'value': []}
+                choices[name] = {'type': None, 'value': [], 'path_to_value': name, 'path_to_timestamp': None, 'condition': None}
             if len(choices[name]['value']) == 0:
                 choices[name]['value'] = [item, item]
             else:
@@ -42,7 +45,7 @@ def linearize(keys, choices, item, name):
 def handle_previous_conditions(keys, choices, item, name):
     if name not in keys:
         keys[name] = 'cat'
-        choices[name] = {'type': None, 'value': []}
+        choices[name] = {'type': None, 'value': [], 'path_to_value': '{}.name'.format(name), 'path_to_timestamp': None, 'condition': None}
 
     for i in item:
         if i['name'] not in choices[name]['value']:
@@ -56,11 +59,17 @@ def handle_lab_test(keys, choices, item, name):
 
             if '{}.{}_value'.format(name, par_name) not in keys:
                 keys['{}.{}_value'.format(name, par_name)] = 'num_tv'
-                choices['{}.{}_value'.format(name, par_name)] = {'type': None, 'value': []}
+                choices['{}.{}_value'.format(name, par_name)] = {'type': None, 'value': [],
+                                                                 'path_to_value': '{}.items.value'.format(name),
+                                                                 'path_to_timestamp': '{}.timestamp'.format(name),
+                                                                 'condition': '{}.items.name=={}'.format(name, par_name)}
 
             if '{}.{}_out_of_bounds'.format(name, par_name) not in keys:
                 keys['{}.{}_out_of_bounds'.format(name, par_name)] = 'bool_tv'
-                choices['{}.{}_out_of_bounds'.format(name, par_name)] = {'type': None, 'value': [True, False]}
+                choices['{}.{}_out_of_bounds'.format(name, par_name)] = {'type': None, 'value': [True, False],
+                                                                         'path_to_value': '{}.items.is_out_of_bounds'.format(name),
+                                                                         'path_to_timestamp': '{}.timestamp'.format(name),
+                                                                         'condition': '{}.items.name=={}'.format(name, par_name)}
 
             if len(choices['{}.{}_value'.format(name, par_name)]['value']) == 0:
                 choices['{}.{}_value'.format(name, par_name)]['value'] = [par_value, par_value]

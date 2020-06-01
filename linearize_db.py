@@ -35,6 +35,7 @@ for k in keys:
     found = False
     for p in time_variant:
         if k[:len(p)] == p:
+            choices[k]['path_to_ts'] = '{}.timestamp'.format(p)
             keys[k] += '_tv'
             found = True
     if (not found) and ('_tv' not in keys[k]):
@@ -70,9 +71,19 @@ for k in keys:
         variables['tv_num'].append(k)
         choices[k]['type'] = 'tv_num'
 
+translation = {k: None for k in choices}
+
+for k in choices:
+    if choices[k]['condition'] is None:
+        choices[k]['field_type'] = 'single_key'
+    else:
+        choices[k]['field_type'] = 'double_key'
+
+
 CHOICES_FILE = os.path.join(THIS_FILE_PATH, 'data_tmp', 'choices.json')
 VARIABLES_FILE = os.path.join(THIS_FILE_PATH, 'data_tmp', 'variables.json')
 LINEARIZED_FILE = os.path.join(THIS_FILE_PATH, 'data_tmp', 'linearized.txt')
+TRANSLATIONS_FILE = os.path.join(THIS_FILE_PATH, 'data_tmp', 'translation.json')
 
 with open(LINEARIZED_FILE, 'w') as f:
     for el in keys:
@@ -83,3 +94,6 @@ with open(CHOICES_FILE, 'w') as outfile:
 
 with open(VARIABLES_FILE, 'w') as outfile:
     json.dump(variables, outfile)
+
+with open(TRANSLATIONS_FILE, 'w') as outfile:
+    json.dump(translation, outfile)
