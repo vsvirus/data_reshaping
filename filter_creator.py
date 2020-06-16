@@ -145,6 +145,13 @@ for k, v in filters.items():
 filtros_anidados =  {"$and": super_filtro}
 
 
+
+
+
+
+
+
+
 # Selected variables to display coming from Dashboard
 # Variables = ['Basic.height_cm','Basic.gender','Amoxicilina', 'Morphin', 'hemoglobine', 'Basic.Condiciones_Previas']
 Variables = ['temperature_celsius']
