@@ -1,0 +1,6 @@
+user_pass.yml
+.vscode/
+__pycache__/
+data_tmp/
+*.json
+*.txt
