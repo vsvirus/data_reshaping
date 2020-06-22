@@ -1,0 +1,704 @@
+{
+	"_id": {
+		"type": "tc_cat",
+		"value": [
+			"5eae0221607e0400194d28d9",
+			"5eae00b8607e0400194d28c5",
+			"5eae0084607e0400194d28b1",
+			"5eadfde6607e0400194d289d",
+			"5eadfd1c607e0400194d2892",
+			"5ea9f0b32d7a700012d35da3"
+		],
+		"path_to_value": "_id",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"patient_id": {
+		"type": "tc_cat",
+		"value": [
+			"$2b$10$C8nWWgQmDWGEBRNiFv5iteV4zZjeHvMSP/cgVBHMBN5fjBxkaWl42",
+			"$2b$10$RmTJwpVjr1cwbWm66RamhOpbqoG7TFzOf76vYjzP9zILLxaz.53ZG",
+			"$2b$10$.pIqAYgU7iu0D0GOhWg96ObXXnOiL8ydG4a8zv8rNjqyUG.Jfh4N2",
+			"$2b$10$qa4hjW1ke7fn4M0RvKJ.9.92sMf02vITFgfXtc7/ZovExPQtP1OE2",
+			"$2b$10$eQRyaGRSSbVu6d.CYamTM.8.hm03daE05ula.B1qwOZer2V0EljDW",
+			"$2b$10$EuyBNL4ub5phUr8nZOh6Ou9rI7CXqKOVQGIpfDYQUssre0DJ7cuVy"
+		],
+		"path_to_value": "patient_id",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"health_provider_id": {
+		"type": "tc_cat",
+		"value": [
+			"1",
+			"3"
+		],
+		"path_to_value": "health_provider_id",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"gender": {
+		"type": "tc_cat",
+		"value": [
+			"female",
+			"male"
+		],
+		"path_to_value": "gender",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"ethnicity": {
+		"type": "tc_cat",
+		"value": [
+			"asian",
+			"other"
+		],
+		"path_to_value": "ethnicity",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"date_of_birth": {
+		"type": "tc_num",
+		"value": [
+			-841574584724,
+			1586427934000
+		],
+		"path_to_value": "date_of_birth",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"date_of_first_symptoms": {
+		"type": "tc_num",
+		"value": [
+			0,
+			1586427934000
+		],
+		"path_to_value": "date_of_first_symptoms",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"date_of_admission": {
+		"type": "tc_num",
+		"value": [
+			0,
+			1587734215277
+		],
+		"path_to_value": "date_of_admission",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"date_of_discharge": {
+		"type": "tc_num",
+		"value": [
+			0,
+			1587388615276
+		],
+		"path_to_value": "date_of_discharge",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"is_deceased": {
+		"type": "tc_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "is_deceased",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"height_cm": {
+		"type": "tc_num",
+		"value": [
+			154,
+			172
+		],
+		"path_to_value": "height_cm",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"weight_kg": {
+		"type": "tc_num",
+		"value": [
+			76,
+			90
+		],
+		"path_to_value": "weight_kg",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"episode_number": {
+		"type": "tc_num",
+		"value": [
+			2,
+			2
+		],
+		"path_to_value": "episode_number",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"previous_conditions": {
+		"type": "tc_cat",
+		"value": [
+			"smoker",
+			"colesterol"
+		],
+		"path_to_value": "previous_conditions.name",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"clinical_updates.symptoms": {
+		"type": "tv_cat",
+		"value": [
+			"dyspnea",
+			"dizziness",
+			"articular_pain",
+			"palpitations",
+			"ageusia"
+		],
+		"path_to_value": "clinical_updates.symptoms",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.other_symptoms": {
+		"type": "tv_cat",
+		"value": [
+			"locura"
+		],
+		"path_to_value": "clinical_updates.other_symptoms",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.complications": {
+		"type": "tv_cat",
+		"value": [
+			"thrombosis",
+			"heart_failure"
+		],
+		"path_to_value": "clinical_updates.complications",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.other_complications": {
+		"type": "tv_cat",
+		"value": [
+			"dierna"
+		],
+		"path_to_value": "clinical_updates.other_complications",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates._id": {
+		"type": "tv_cat",
+		"value": [
+			"5eae0221607e0400194d28dc",
+			"5eae0221607e0400194d28dd",
+			"5eae00b8607e0400194d28c8",
+			"5eae00b8607e0400194d28c9",
+			"5eae0084607e0400194d28b4",
+			"5eae0084607e0400194d28b5",
+			"5eadfde6607e0400194d28a0",
+			"5eadfde6607e0400194d28a1"
+		],
+		"path_to_value": "clinical_updates._id",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.timestamp": {
+		"type": "tv_cat",
+		"value": [
+			"2020-04-10T13:16:55.276Z",
+			"2020-04-25T05:16:55.276Z"
+		],
+		"path_to_value": "clinical_updates.timestamp",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.is_icu_candidate": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "clinical_updates.is_icu_candidate",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.temperature_celsius": {
+		"type": "tv_num",
+		"value": [
+			36,
+			38
+		],
+		"path_to_value": "clinical_updates.temperature_celsius",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.blood_pressure_systolic": {
+		"type": "tv_num",
+		"value": [
+			140,
+			145
+		],
+		"path_to_value": "clinical_updates.blood_pressure_systolic",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.blood_pressure_diastolic": {
+		"type": "tv_num",
+		"value": [
+			121,
+			146
+		],
+		"path_to_value": "clinical_updates.blood_pressure_diastolic",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.heart_rate": {
+		"type": "tv_num",
+		"value": [
+			52,
+			72
+		],
+		"path_to_value": "clinical_updates.heart_rate",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.respiratory_rate": {
+		"type": "tv_num",
+		"value": [
+			15,
+			26
+		],
+		"path_to_value": "clinical_updates.respiratory_rate",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.o2_saturation_percent": {
+		"type": "tv_num",
+		"value": [
+			83,
+			94
+		],
+		"path_to_value": "clinical_updates.o2_saturation_percent",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.o2_device_type": {
+		"type": "tv_cat",
+		"value": [
+			"0"
+		],
+		"path_to_value": "clinical_updates.o2_device_type",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.o2_device_model": {
+		"type": "tv_num",
+		"value": [
+			7,
+			8
+		],
+		"path_to_value": "clinical_updates.o2_device_model",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.o2_device_oxygen_concentration_percent": {
+		"type": "tv_num",
+		"value": [
+			84,
+			87
+		],
+		"path_to_value": "clinical_updates.o2_device_oxygen_concentration_percent",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.o2_device_flow_liters_per_min": {
+		"type": "tv_num",
+		"value": [
+			1,
+			4
+		],
+		"path_to_value": "clinical_updates.o2_device_flow_liters_per_min",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.has_good_o2_device_adherence": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "clinical_updates.has_good_o2_device_adherence",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.needs_prone_position": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "clinical_updates.needs_prone_position",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"clinical_updates.location": {
+		"type": "tv_cat",
+		"value": [
+			"Llegada"
+		],
+		"path_to_value": "clinical_updates.location",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "clinical_updates.timestamp",
+		"field_type": "single_key"
+	},
+	"radiological_tests._id": {
+		"type": "tv_cat",
+		"value": [
+			"5eae0221607e0400194d28de",
+			"5eae00b8607e0400194d28ca",
+			"5eae0084607e0400194d28b6",
+			"5eadfde6607e0400194d28a2"
+		],
+		"path_to_value": "radiological_tests._id",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "radiological_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"radiological_tests.timestamp": {
+		"type": "tv_cat",
+		"value": [
+			"2020-04-10T13:16:55.276Z"
+		],
+		"path_to_value": "radiological_tests.timestamp",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "radiological_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"radiological_tests.has_pneumonia": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "radiological_tests.has_pneumonia",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "radiological_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"radiological_tests.pneumonia_subtype": {
+		"type": "tv_cat",
+		"value": [
+			"frontal"
+		],
+		"path_to_value": "radiological_tests.pneumonia_subtype",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "radiological_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"radiological_tests.test_type": {
+		"type": "tv_cat",
+		"value": [
+			"escaner"
+		],
+		"path_to_value": "radiological_tests.test_type",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "radiological_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"coronavirus_tests._id": {
+		"type": "tv_cat",
+		"value": [
+			"5eae0221607e0400194d28df",
+			"5eae00b8607e0400194d28cb",
+			"5eae0084607e0400194d28b7",
+			"5eadfde6607e0400194d28a3",
+			"5eadfd1c607e0400194d2893",
+			"5ea9f0b32d7a700012d35da4"
+		],
+		"path_to_value": "coronavirus_tests._id",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "coronavirus_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"coronavirus_tests.timestamp": {
+		"type": "tv_cat",
+		"value": [
+			"2020-04-10T13:16:55.276Z",
+			"2020-04-09T10:25:34.000Z"
+		],
+		"path_to_value": "coronavirus_tests.timestamp",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "coronavirus_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"coronavirus_tests.result": {
+		"type": "tv_cat",
+		"value": [
+			"positive",
+			"0"
+		],
+		"path_to_value": "coronavirus_tests.result",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "coronavirus_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"coronavirus_tests.test_type": {
+		"type": "tv_cat",
+		"value": [
+			"abb",
+			"0"
+		],
+		"path_to_value": "coronavirus_tests.test_type",
+		"path_to_timestamp": null,
+		"condition": null,
+		"path_to_ts": "coronavirus_tests.timestamp",
+		"field_type": "single_key"
+	},
+	"lab_tests.hemoglobine_value": {
+		"type": "tv_num",
+		"value": [
+			22.513155568959996,
+			149.28444585441535
+		],
+		"path_to_value": "lab_tests.items.value",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==hemoglobine",
+		"field_type": "double_key"
+	},
+	"lab_tests.hemoglobine_out_of_bounds": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "lab_tests.items.is_out_of_bounds",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==hemoglobine",
+		"field_type": "double_key"
+	},
+	"lab_tests.leucocytes_value": {
+		"type": "tv_num",
+		"value": [
+			9.693020393230104,
+			159.817550518219
+		],
+		"path_to_value": "lab_tests.items.value",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==leucocytes",
+		"field_type": "double_key"
+	},
+	"lab_tests.leucocytes_out_of_bounds": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "lab_tests.items.is_out_of_bounds",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==leucocytes",
+		"field_type": "double_key"
+	},
+	"lab_tests.haematocrit_value": {
+		"type": "tv_num",
+		"value": [
+			8.103622627732964,
+			148.34054556249999
+		],
+		"path_to_value": "lab_tests.items.value",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==haematocrit",
+		"field_type": "double_key"
+	},
+	"lab_tests.haematocrit_out_of_bounds": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "lab_tests.items.is_out_of_bounds",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==haematocrit",
+		"field_type": "double_key"
+	},
+	"created_at": {
+		"type": "tc_cat",
+		"value": [
+			"2020-05-02T23:28:33.723Z",
+			"2020-05-02T23:22:32.149Z",
+			"2020-05-02T23:21:40.741Z",
+			"2020-05-02T23:10:30.214Z",
+			"2020-05-02T23:07:08.530Z",
+			"2020-04-29T21:25:07.414Z"
+		],
+		"path_to_value": "created_at",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"updatedAt": {
+		"type": "tc_cat",
+		"value": [
+			"2020-05-02T23:28:33.723Z",
+			"2020-05-02T23:22:32.149Z",
+			"2020-05-02T23:21:40.741Z",
+			"2020-05-02T23:10:30.214Z",
+			"2020-05-02T23:07:08.530Z",
+			"2020-04-29T21:25:07.414Z"
+		],
+		"path_to_value": "updatedAt",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"__v": {
+		"type": "tc_num",
+		"value": [
+			0,
+			0
+		],
+		"path_to_value": "__v",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"last_edition_date": {
+		"type": "tc_num",
+		"value": [
+			0,
+			1586427934000
+		],
+		"path_to_value": "last_edition_date",
+		"path_to_timestamp": null,
+		"condition": null,
+		"field_type": "single_key"
+	},
+	"lab_tests.uno_value": {
+		"type": "tv_num",
+		"value": [
+			10.381135431803355,
+			88.77638105846316
+		],
+		"path_to_value": "lab_tests.items.value",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==uno",
+		"field_type": "double_key"
+	},
+	"lab_tests.uno_out_of_bounds": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "lab_tests.items.is_out_of_bounds",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==uno",
+		"field_type": "double_key"
+	},
+	"lab_tests.dos_value": {
+		"type": "tv_num",
+		"value": [
+			3.6546909458595815,
+			3.6546909458595815
+		],
+		"path_to_value": "lab_tests.items.value",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==dos",
+		"field_type": "double_key"
+	},
+	"lab_tests.dos_out_of_bounds": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "lab_tests.items.is_out_of_bounds",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==dos",
+		"field_type": "double_key"
+	},
+	"lab_tests.tres_value": {
+		"type": "tv_num",
+		"value": [
+			24.025920873127885,
+			24.025920873127885
+		],
+		"path_to_value": "lab_tests.items.value",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==tres",
+		"field_type": "double_key"
+	},
+	"lab_tests.tres_out_of_bounds": {
+		"type": "tv_bool",
+		"value": [
+			true,
+			false
+		],
+		"path_to_value": "lab_tests.items.is_out_of_bounds",
+		"path_to_timestamp": "lab_tests.timestamp",
+		"condition": "lab_tests.items.name==tres",
+		"field_type": "double_key"
+	}
+}
