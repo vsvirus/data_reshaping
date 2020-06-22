@@ -35,7 +35,7 @@ for k in keys:
     found = False
     for p in time_variant:
         if k[:len(p)] == p:
-            choices[k]['path_to_ts'] = '{}.timestamp'.format(p)
+            choices[k]['path_to_timestamp'] = '{}.timestamp'.format(p)
             keys[k] += '_tv'
             found = True
     if (not found) and ('_tv' not in keys[k]):

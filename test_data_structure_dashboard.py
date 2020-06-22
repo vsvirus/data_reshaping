@@ -184,13 +184,33 @@ class Data():
 
         return data_from_db
 
-    @staticmethod
-    def _build_selection(sel):
-        # TODO: implement
-        return sel
+    def _build_selection(self, sel):
+        """
+        This extends the field needed
+        """
 
-    @staticmethod
-    def _build_filter(filt):
+        self._selection_extended = {}  # Maybe I need this later
+        sel_out = []
+
+        for s in sel:
+            self._selection_extended[s] = []
+
+            # Add path to value
+            self._selection_extended[s].append(self._var_info[s]['path_to_value'])
+
+            # Add timestamp, in case
+            if self._var_info[s]['path_to_timestamp'] is not None:
+                self._selection_extended[s].append(self._var_info[s]['path_to_timestamp'])
+
+            # Add path to condition
+            if self._var_info[s]["condition"] is not None:
+                self._selection_extended[s].append(self._var_info[s]["condition"].split('==')[0])
+
+            sel_out += self._selection_extended[s]
+
+        return sel_out
+
+    def _build_filter(self, filt):
 
         supported_types = [
             'tc_cat',
@@ -297,7 +317,7 @@ if __name__ == "__main__":
     translation_file = os.path.join(THIS_FOLDER, 'data_tmp', 'translation.json')
 
     filter_from_dashboard = {'gender': ['female']}
-    select_from_dashboard = ['height_cm']
+    select_from_dashboard = ['health_provider_id', 'height_cm', 'lab_tests.leucocytes_value']
 
     data = Data(access=access_file, var_info=var_info_file, variables=variables_file, translation=translation_file)
 
