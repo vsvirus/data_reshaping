@@ -3,6 +3,7 @@ import json
 import os
 import re  # Regular expressions
 import requests
+import pandas as pd
 
 # TODO: error handling...but we don't make mistakes :-P
 
@@ -151,7 +152,7 @@ class Data():
 
         return self._var_info['patient_id']['value']  #TODO: this shouldn't be hardcoded
 
-    def get_data(self, variables, filters, plot_type, bloodstream_options=None):
+    def get_data(self, variables, filters, plot_type, time_variant_opt=None):
         """
         This method returns the data that are strictly needed for the plot.
 
@@ -167,9 +168,40 @@ class Data():
         Returns
         -------
         Depends on the type of plot
-
         """
-        return None # TODO after Damiano
+
+        db_response = self._filter_and_select(filt=filters, sel=variables)  # It is a JSON
+
+        if plot_type in ['Histogram', 'Scatter', 'Bar', 'Box']:
+            data = self._prepare_data_for_time_constant(db_response, variables)
+        elif plot_type in ['TimeSeries']:
+            data = self._prepare_data_for_time_series(db_response, time_variant_opt)
+        elif plot_type in ['HeatMap']:
+            data = self._prepare_data_for_heatmap(db_response, time_variant_opt)
+        else:
+            raise ValueError('Plot type {} not handled'.format(plot_type))
+
+        return data
+
+    def _prepare_data_for_time_constant(self, db_response, variables):
+
+        # data = pd.DataFrame(columns=variables + 'ID')
+
+        # for el in db_response:
+        #     el_content = {}
+        #     el_content['ID'] = el['_id']
+        #     for v in variables:
+        #         path_to_value = self._var_info[v]['path_to_value']
+        #         el_content[v] = el[]
+
+
+        pass
+
+    def _prepare_data_for_time_series(self, db_response, time_variant_opt):
+        pass
+
+    def _prepare_data_for_heatmap(self, db_response, time_variant_opt):
+        pass
 
     def _filter_and_select(self, filt=None, sel=None):
 
@@ -189,24 +221,20 @@ class Data():
         This extends the field needed
         """
 
-        self._selection_extended = {}  # Maybe I need this later
         sel_out = []
 
         for s in sel:
-            self._selection_extended[s] = []
 
             # Add path to value
-            self._selection_extended[s].append(self._var_info[s]['path_to_value'])
+            sel_out.append(self._var_info[s]['path_to_value'])
 
             # Add timestamp, in case
             if self._var_info[s]['path_to_timestamp'] is not None:
-                self._selection_extended[s].append(self._var_info[s]['path_to_timestamp'])
+                sel_out.append(self._var_info[s]['path_to_timestamp'])
 
             # Add path to condition
             if self._var_info[s]["condition"] is not None:
-                self._selection_extended[s].append(self._var_info[s]["condition"].split('==')[0])
-
-            sel_out += self._selection_extended[s]
+                sel_out.append(self._var_info[s]["condition"].split('==')[0])
 
         return sel_out
 
@@ -317,10 +345,16 @@ if __name__ == "__main__":
     translation_file = os.path.join(THIS_FOLDER, 'data_tmp', 'translation.json')
 
     filter_from_dashboard = {'gender': ['female']}
-    select_from_dashboard = ['health_provider_id', 'height_cm', 'lab_tests.leucocytes_value']
+    select_from_dashboard = [
+        'health_provider_id',
+        'height_cm',
+        'lab_tests.leucocytes_value',
+        'clinical_updates.symptoms',
+        'radiological_tests.has_pneumonia',
+        'coronavirus_tests.result',
+        ]
 
     data = Data(access=access_file, var_info=var_info_file, variables=variables_file, translation=translation_file)
 
-    filtered = data._filter_and_select(filt=filter_from_dashboard, sel=select_from_dashboard)
-
-    pass
+    with open('tmp.json', 'w') as f:
+        json.dump(data._filter_and_select(filter_from_dashboard, select_from_dashboard), f)
