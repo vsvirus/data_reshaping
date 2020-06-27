@@ -102,33 +102,11 @@ class Data():
         return output
 
     def get_var_info(self, variables):
-        """
-        This method returns the uniques options in the variables. If time and
-        event_zero are None then it works only with tcant variables, if
-        both defined, it looks for a snapshot in the data.
-        If numeric variables, it returns min and max.
 
-        Parameters
-        ----------
-        variables : list(str)
-            List of variables to return the var_info.
-        time : int
-            Time stamp
-        event_zero : str
-            Event to start counting the days after
-
-        Returns
-        -------
-        dict
-            {variable: {type: 'type', value: var_info}}
-        """
-
-        # check if the file is updated
         # check if the file is updated
         if (os.path.getmtime(self._var_info_name) != self._var_info_time or
             os.path.getmtime(self._variables_name) != self._variables_time or
             os.path.getmtime(self._translation_name) != self._translation_time):
-
 
            self._load_info_files()
 
@@ -172,36 +150,126 @@ class Data():
 
         db_response = self._filter_and_select(filt=filters, sel=variables)  # It is a JSON
 
-        if plot_type in ['Histogram', 'Scatter', 'Bar', 'Box']:
-            data = self._prepare_data_for_time_constant(db_response, variables)
-        elif plot_type in ['TimeSeries']:
-            data = self._prepare_data_for_time_series(db_response, time_variant_opt)
-        elif plot_type in ['HeatMap']:
-            data = self._prepare_data_for_heatmap(db_response, time_variant_opt)
+        # Select quickly the mogo ids of patients
+        ids = [pat['_id'] for pat in db_response]
+
+        data_as_table = pd.DataFrame(index=ids, columns=variables)
+
+        for var in variables:
+            search_path = self._var_info[var]['path_to_value'].split('.')
+            condition_path = None if self._var_info[var]['condition'] is None else self._var_info[var]['condition'].split('==')[0].split('.')
+            condition_equality = None if condition_path is None else self._var_info[var]['condition'].split('==')[1]
+            if 'tc' in self._var_info[var]['type']:
+                for pat in db_response:
+                    pat_var = self._reshape_constant(pat, search_path, condition_path, condition_equality)
+                    data_as_table.loc[pat['_id']][var] = pat_var
+            elif 'tv' in self._var_info[var]['type']:
+                timestamp_path = self._var_info[var]['path_to_timestamp'].split('.')
+                for pat in db_response:
+                    pat_var = self._reshape_variant(pat, search_path, condition_path, condition_equality, timestamp_path)
+                    data_as_table.loc[pat['_id']][var] = pat_var[2]
+
+        if plot_type in ['Constant']:
+            # I just return the data_as_table which, when coupled with the dashboard will contain only constant variables
+            return data_as_table
+        elif plot_type in ['Variant_num']:
+            return self._polish_data_num_variant(data_as_table, )
+        pass
+
+    def _reshape_constant(self, pat, search_path, condition_path, condition_equality):
+        # Important assumption: search_path and condition_path are equal until the second-last
+        # e.g. sp: a.b.c.d
+        #      cp: a.b.c.e
+
+        if condition_path is not None:
+            if search_path[0] != condition_path[0] and len(search_path) > 1:
+                raise ValueError('Unsupported case')
+
+        if len(search_path) > 1:
+            result = pat[search_path[0]]
         else:
-            raise ValueError('Plot type {} not handled'.format(plot_type))
+            result = pat
 
-        return data
+        if isinstance(result, dict) and len(search_path) > 1:
+            if condition_path is None:
+                value = self._reshape_constant(result, search_path[1:], condition_path, condition_equality)
+            else:
+                value = self._reshape_constant(result, search_path[1:], condition_path[1:], condition_equality)
+        elif isinstance(result, list) and ((not isinstance(result[0], bool)) or (not isinstance(result[0], str))):
+            for res in result:
+                if condition_path is None:
+                    val = self._reshape_constant(res, search_path[1:], condition_path, condition_equality)
+                else:
+                    val = self._reshape_constant(res, search_path[1:], condition_path[1:], condition_equality)
+                if val is not None:
+                    value = val
+        else:
+            # We have reached the value
+            value = result[search_path[0]]
 
-    def _prepare_data_for_time_constant(self, db_response, variables):
+            if condition_path is not None:
+                condition = result[condition_path[0]]
+                if str(condition) == condition_equality:
+                    return value
+                else:
+                    return None
+            else:
+                return value
 
-        # data = pd.DataFrame(columns=variables + 'ID')
+        return value
 
-        # for el in db_response:
-        #     el_content = {}
-        #     el_content['ID'] = el['_id']
-        #     for v in variables:
-        #         path_to_value = self._var_info[v]['path_to_value']
-        #         el_content[v] = el[]
+    def _reshape_variant(self, pat, search_path, condition_path, condition_equality, timestamp_path, timestamp=None, res_dict=None):
+        # Important assumption: search_path and condition_path are equal until the second-last
+        # e.g. sp: a.b.c.d
+        #      cp: a.b.c.e
+        # Important assumption 2: timestamp_path is shorter/equal than search path and equal until second last
+        # e.g. sp: a.b.c.d.e
+        #      tp: a.b.f
 
+        if res_dict is None:
+            res_dict = {}
 
-        pass
+        if condition_path is not None:
+            if search_path[0] != condition_path[0] and len(search_path) > 1:
+                raise ValueError('Unsupported case')
 
-    def _prepare_data_for_time_series(self, db_response, time_variant_opt):
-        pass
+        if len(search_path) > 1:
+            result = pat[search_path[0]]
+        else:
+            result = pat
 
-    def _prepare_data_for_heatmap(self, db_response, time_variant_opt):
-        pass
+        if len(timestamp_path) == 1:
+            timestamp = pat[timestamp_path[0]]
+
+        if isinstance(result, dict) and len(search_path) > 1:
+            if condition_path is None:
+                value, timestamp = self._reshape_variant(result, search_path[1:], condition_path, condition_equality, timestamp_path[1:], timestamp, res_dict)[:2]
+            else:
+                value, timestamp = self._reshape_variant(result, search_path[1:], condition_path[1:], condition_equality, timestamp_path[1:], timestamp, res_dict)[:2]
+        elif isinstance(result, list) and ((not isinstance(result[0], bool)) or (not isinstance(result[0], str))):
+            for res in result:
+                if condition_path is None:
+                    val, timestamp = self._reshape_variant(res, search_path[1:], condition_path, condition_equality, timestamp_path[1:], timestamp, res_dict)[:2]
+                else:
+                    val, timestamp = self._reshape_variant(res, search_path[1:], condition_path[1:], condition_equality, timestamp_path[1:], timestamp, res_dict)[:2]
+                if val is not None:
+                    value = val
+                    if timestamp not in res_dict.keys():
+                        res_dict[timestamp] = value
+        else:
+            # We have reached the value
+            value = result[search_path[0]]
+
+            if condition_path is not None:
+                condition = result[condition_path[0]]
+                if str(condition) == condition_equality:
+                    return value, timestamp
+                else:
+                    return None, timestamp
+            else:
+                return value, timestamp
+
+        return value, timestamp, res_dict
 
     def _filter_and_select(self, filt=None, sel=None):
 
@@ -356,5 +424,7 @@ if __name__ == "__main__":
 
     data = Data(access=access_file, var_info=var_info_file, variables=variables_file, translation=translation_file)
 
-    with open('tmp.json', 'w') as f:
-        json.dump(data._filter_and_select(filter_from_dashboard, select_from_dashboard), f)
+    data.get_data(variables=select_from_dashboard, filters=filter_from_dashboard, plot_type=None)
+
+    # with open('tmp.json', 'w') as f:
+    #     json.dump(data._filter_and_select(filter_from_dashboard, select_from_dashboard), f, indent=4)
