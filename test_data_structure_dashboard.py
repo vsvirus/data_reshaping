@@ -173,8 +173,61 @@ class Data():
             # I just return the data_as_table which, when coupled with the dashboard will contain only constant variables
             return data_as_table
         elif plot_type in ['Variant_num']:
-            return self._polish_data_num_variant(data_as_table, )
-        pass
+            return self._polish_data_num_variant(data_as_table, time_variant_opt, var_to_plot=variables[0]) # The dashboard asks only for 1 variable
+        elif plot_type in ['Variant_cat']:
+            return self._polish_data_cat_variant(data_as_table, time_variant_opt, var_to_plot=variables[0]) # The dashboard asks only for 1 variable
+
+    def _polish_data(self, data_as_table, time_variant_opt, var_to_plot, agg_func):
+        # 1) Get for each patient time reference
+        patients_in_table = data_as_table.index.to_list()
+        event_path_to_value = self._var_info[time_variant_opt['event_zero']]['path_to_value']
+
+        db_output = self._filter_and_select(filt={'_id': patients_in_table}, sel=[event_path_to_value])
+
+        data_as_table['e0'] = None
+
+        for el in db_output:
+            data_as_table.loc[el['_id']]['e0'] = self._reshape_constant(el, event_path_to_value.split('.'), None, None)
+
+        # 2) Scale all data given the time reference
+
+        all_patients = pd.DataFrame(index=pd.timedelta_range(start=time_variant_opt['start_plot'], end=time_variant_opt['end_plot'], freq='1D'))
+
+        for row in data_as_table.iterrows():
+            data = row[var_to_plot]
+            data_series = pd.Series(data)
+            data_series.index = pd.to_datetime(data_series.index)# TODO: force format (faster), format='%Y-%m-%dT%H:%M:%S.000Z')
+            event_zero_time = datetime.datetime.strptime(row['e0'])
+            data_series.index = data_series.index - event_zero_time
+            data_series.index = data_series.index.round('1D')
+            if agg_func == 'mean':
+                aggregated_data_series = data_series.resample('1D').mean()
+            else:
+                raise KeyError()
+
+            all_patients[row.index] = aggregated_data_series
+
+        # 3) Get patients to plot over (check first if they are in already in the table)
+
+        # 4) For patients not in table, scale
+
+        return all_patients
+
+    def _polish_data_num_variant(self, data_as_table, time_variant_opt, var_to_plot):
+
+        all_patients, specific_patients = self._polish_data(data_as_table, time_variant_opt, var_to_plot, agg_func='mean')
+
+        # DO the aggregation (quantiles)
+
+        return all_patients, specific_patients
+
+    def _polish_data_cat_variant(self, data_as_table, time_variant_opt, var_to_plot):
+
+        all_patients, specific_patients = self._polish_data(data_as_table, time_variant_opt, var_to_plot)
+
+        # DO the aggregation (quantiles)
+
+        return all_patients, specific_patients
 
     def _reshape_constant(self, pat, search_path, condition_path, condition_equality):
         # Important assumption: search_path and condition_path are equal until the second-last
@@ -312,9 +365,10 @@ class Data():
             'tc_cat',
             'tc_bool',
             'tc_num',
+            'events',
         ]
 
-        supported_variables = [x['value'] for x in self.get_variables(types=supported_types)]
+        supported_variables = [x['value'] for x in self.get_variables(types=supported_types)] + ['_id']
 
         for key in filt:
             if key not in supported_variables:
@@ -414,17 +468,17 @@ if __name__ == "__main__":
 
     filter_from_dashboard = {'gender': ['female']}
     select_from_dashboard = [
-        'health_provider_id',
-        'height_cm',
+        # 'health_provider_id',
+        # 'height_cm',
         'lab_tests.leucocytes_value',
-        'clinical_updates.symptoms',
-        'radiological_tests.has_pneumonia',
-        'coronavirus_tests.result',
+        # 'clinical_updates.symptoms',
+        # 'radiological_tests.has_pneumonia',
+        # 'coronavirus_tests.result',
         ]
 
     data = Data(access=access_file, var_info=var_info_file, variables=variables_file, translation=translation_file)
 
-    data.get_data(variables=select_from_dashboard, filters=filter_from_dashboard, plot_type=None)
+    data.get_data(variables=select_from_dashboard, filters=filter_from_dashboard, plot_type='Variant_num', time_variant_opt={'event_zero': 'date_of_first_symptoms', 'start_plot': '-10 days', 'end_plot': '10 days'})
 
     # with open('tmp.json', 'w') as f:
     #     json.dump(data._filter_and_select(filter_from_dashboard, select_from_dashboard), f, indent=4)
