@@ -4,6 +4,7 @@ import os
 import re  # Regular expressions
 import requests
 import pandas as pd
+import datetime
 
 # TODO: error handling...but we don't make mistakes :-P
 
@@ -136,13 +137,10 @@ class Data():
 
         Parameters
         ----------
-        filters : dict(str: list)
-            Filters to apply to the data. Key: variable, value: options
-        plot_options : dict(str: list)
-            variables for the plot
-        plot_type : str
-            Type of plot
-
+        plot_type: 'Histogram', 'Scatter', 'Bar', 'Box', 'NumericTimeVariant',
+                   'CatBoolTimeVariant'
+        time_variant_opt: 'event_zero', 'start_plot' (int, days),
+                          'end_plot' (int, days), 'patients'
         Returns
         -------
         Depends on the type of plot
@@ -169,65 +167,103 @@ class Data():
                     pat_var = self._reshape_variant(pat, search_path, condition_path, condition_equality, timestamp_path)
                     data_as_table.loc[pat['_id']][var] = pat_var[2]
 
-        if plot_type in ['Constant']:
+        if plot_type in ['Histogram', 'Scatter', 'Bar', 'Box']:
             # I just return the data_as_table which, when coupled with the dashboard will contain only constant variables
             return data_as_table
-        elif plot_type in ['Variant_num']:
+        elif plot_type in ['NumericTimeVariant']:
             return self._polish_data_num_variant(data_as_table, time_variant_opt, var_to_plot=variables[0]) # The dashboard asks only for 1 variable
-        elif plot_type in ['Variant_cat']:
+        elif plot_type in ['CatBoolTimeVariant']:
             return self._polish_data_cat_variant(data_as_table, time_variant_opt, var_to_plot=variables[0]) # The dashboard asks only for 1 variable
 
     def _polish_data(self, data_as_table, time_variant_opt, var_to_plot, agg_func):
         # 1) Get for each patient time reference
         patients_in_table = data_as_table.index.to_list()
-        event_path_to_value = self._var_info[time_variant_opt['event_zero']]['path_to_value']
+        event_path_to_value = self._var_info[time_variant_opt['event_zero']]['path_to_value']  # TODO: what if the patient does not have e0?
 
         db_output = self._filter_and_select(filt={'_id': patients_in_table}, sel=[event_path_to_value])
 
         data_as_table['e0'] = None
 
-        for el in db_output:
-            data_as_table.loc[el['_id']]['e0'] = self._reshape_constant(el, event_path_to_value.split('.'), None, None)
+        for pat in db_output:
+            data_as_table.loc[pat['_id']]['e0'] = self._reshape_constant(pat, event_path_to_value.split('.'), None, None)
 
         # 2) Scale all data given the time reference
+        start = '{} days'.format(time_variant_opt['start_plot'])
+        end = '{} days'.format(time_variant_opt['end_plot'])
+        all_patients = pd.DataFrame(index=pd.timedelta_range(start=start, end=end, freq='1D'),
+                                    columns=patients_in_table)
 
-        all_patients = pd.DataFrame(index=pd.timedelta_range(start=time_variant_opt['start_plot'], end=time_variant_opt['end_plot'], freq='1D'))
-
-        for row in data_as_table.iterrows():
-            data = row[var_to_plot]
+        for ind, content in data_as_table.iterrows():
+            data = content[var_to_plot]
             data_series = pd.Series(data)
             data_series.index = pd.to_datetime(data_series.index)# TODO: force format (faster), format='%Y-%m-%dT%H:%M:%S.000Z')
-            event_zero_time = datetime.datetime.strptime(row['e0'])
+            if not isinstance(content['e0'], int):
+                raise ValueError('Time must be in ms')
+            event_zero_time = pd.to_datetime(content['e0'], unit='ms', utc=True)
             data_series.index = data_series.index - event_zero_time
             data_series.index = data_series.index.round('1D')
             if agg_func == 'mean':
                 aggregated_data_series = data_series.resample('1D').mean()
             else:
-                raise KeyError()
+                raise KeyError('I do not know how to handle agg_func={}'.format(agg_func))
 
-            all_patients[row.index] = aggregated_data_series
+            all_patients[ind] = aggregated_data_series
 
-        # 3) Get patients to plot over (check first if they are in already in the table)
+        # 3) Get patients to plot over
 
-        # 4) For patients not in table, scale
+        patients_specific_data = {}  # key: pub ID, value: pd.Series
 
-        return all_patients
+        if isinstance(time_variant_opt['patients'], list):  # TODO: check if this works
+            patients_to_overlap = time_variant_opt['patients']  # This is the public ID, not the mongo
+            filt = {'patient_id': patients_to_overlap}
+            sel = [event_path_to_value, var_to_plot, 'patient_id']
+
+            db_output = self._filter_and_select(filt=filt, sel=sel)
+
+            search_path = self._var_info[var_to_plot]['path_to_value'].split('.')
+            condition_path = None if self._var_info[var_to_plot]['condition'] is None else self._var_info[var_to_plot]['condition'].split('==')[0].split('.')
+            condition_equality = None if condition_path is None else self._var_info[var_to_plot]['condition'].split('==')[1]
+            timestamp_path = self._var_info[var_to_plot]['path_to_timestamp'].split('.')
+
+            for pat in db_output:
+                # a) extract e0
+                event_zero_time = pd.to_datetime(self._reshape_constant(pat, event_path_to_value.split('.'), None, None), unit='ms', utc=True)
+
+                # b) extract id
+                pat_id = self._reshape_constant(pat, self._var_info['patient_id']['path_to_value'].split('.'), None, None)
+
+                # c) extract ts
+                data = self._reshape_variant(pat,
+                                             search_path=search_path,
+                                             condition_path=condition_path,
+                                             condition_equality=condition_equality,
+                                             timestamp_path=timestamp_path)[2]
+                # d) scale
+                data_series = pd.Series(data)
+                data_series.index = pd.to_datetime(data_series.index)# TODO: force format (faster), format='%Y-%m-%dT%H:%M:%S.000Z')
+                data_series.index = data_series.index - event_zero_time
+
+                # e) assemble
+                patients_specific_data[pat_id] = data_series
+
+        return all_patients, patients_specific_data
 
     def _polish_data_num_variant(self, data_as_table, time_variant_opt, var_to_plot):
 
-        all_patients, specific_patients = self._polish_data(data_as_table, time_variant_opt, var_to_plot, agg_func='mean')
+        all_patients, patients_specific_data = self._polish_data(data_as_table, time_variant_opt, var_to_plot, agg_func='mean')
 
-        # DO the aggregation (quantiles)
+        all_patients = all_patients.interpolate('linear')
+        quantiles = all_patients.quantile(q=[0.05, 0.5, 0.95], axis=1).transpose()
 
-        return all_patients, specific_patients
+        return quantiles, patients_specific_data
 
     def _polish_data_cat_variant(self, data_as_table, time_variant_opt, var_to_plot):
 
-        all_patients, specific_patients = self._polish_data(data_as_table, time_variant_opt, var_to_plot)
+        raise NotImplementedError('TODO. Conceptual/design limitation')
 
-        # DO the aggregation (quantiles)
+        # all_patients, patients_specific_data = self._polish_data(data_as_table, time_variant_opt, var_to_plot, agg_func='mode')
 
-        return all_patients, specific_patients
+        # return all_patients, patients_specific_data
 
     def _reshape_constant(self, pat, search_path, condition_path, condition_equality):
         # Important assumption: search_path and condition_path are equal until the second-last
@@ -478,7 +514,13 @@ if __name__ == "__main__":
 
     data = Data(access=access_file, var_info=var_info_file, variables=variables_file, translation=translation_file)
 
-    data.get_data(variables=select_from_dashboard, filters=filter_from_dashboard, plot_type='Variant_num', time_variant_opt={'event_zero': 'date_of_first_symptoms', 'start_plot': '-10 days', 'end_plot': '10 days'})
+    print(data.get_data(variables=select_from_dashboard,
+                  filters=filter_from_dashboard,
+                  plot_type='NumericTimeVariant',
+                  time_variant_opt={'event_zero': 'date_of_first_symptoms',
+                                    'start_plot': -18360,
+                                    'end_plot': -18350,
+                                    'patients': ['$2b$10$C8nWWgQmDWGEBRNiFv5iteV4zZjeHvMSP/cgVBHMBN5fjBxkaWl42']}))
 
     # with open('tmp.json', 'w') as f:
     #     json.dump(data._filter_and_select(filter_from_dashboard, select_from_dashboard), f, indent=4)
