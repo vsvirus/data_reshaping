@@ -10,8 +10,13 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 seed(1)
 
+birth_date = datetime.now()-relativedelta(years=randint(5,85))
+first_symptomps_date = datetime.now()-relativedelta(days=randint(25,40))
+admission_date = first_symptomps_date + relativedelta(days=randint(0,10))
+discharge_date = admission_date + relativedelta(days=randint(10,20))
+
 ethnicity = ['european', 'african', 'asian', 'other']
-discharge = [None,(datetime.now()-relativedelta(days=randint(10,20)))]
+discharge = [None,(discharge_date.timestamp()*1000)]
 boolean = [True,False]
 prev_contitions = ['diabetes','smoker','cancer', 'colesterol']
 parametros = ['hemoglobine','leucocytes','haematocrit']
@@ -24,6 +29,7 @@ complications1 = ['thrombosis','renal_impairment','liver_impairment']
 complications2 = ['arritmia','heart_failure','infection']
 
 lugares = ['Llegada', 'Planta', 'UCI']
+gender = ['male','female']
 
 blod_preassure = [None,randint(120,160)]
 heart_rate = [None,randint(50,120)]
@@ -40,7 +46,7 @@ result = ['positive', 'negative']
 def dummy_data():
     data = []
     
-    for i in range (50):
+    for i in range (15):
         previous_conditions = [] # done
         test_paciente = [] # done
         clinical_updates = [] # done
@@ -51,8 +57,9 @@ def dummy_data():
         n_drugs = randint(0,2)
         for j in range(n_drugs):
             date = datetime.now()-relativedelta(days=22/(j+1))
-            drg = {'_id':str(i), 'date_start':str(date),
-                  'date_end':str(date + relativedelta(days=randint(1,2))), 
+            date_end = date + relativedelta(days=randint(1,2))
+            drg = {'date_start':date.timestamp() * 1000,
+                  'date_end':date_end.timestamp() * 1000, 
                   'name':drogas[randint(0,4)], 'dose':randint(1,10),
                   'interval':randint(1,4)*3600}
             drugs.append(drg)
@@ -60,20 +67,23 @@ def dummy_data():
         
         n_sars = randint(0,2)
         for j in range(n_sars):
-            sars = {'_id':str(i),'timestamp':str(datetime.now()-relativedelta(days=22/(j+1))),
+            timestamp = datetime.now()-relativedelta(days=22/(j+1))
+            sars = {'timestamp':timestamp.timestamp()*1000,
                   'result':result[randint(0,1)], 'test_type': cov_test[randint(0,2)]}
             sars_cov2_tests.append(sars)
         
         n_rx = randint(0,2)
         for j in range(n_rx):
-            rx = {'_id':str(i),'timestamp':str(datetime.now()-relativedelta(days=22/(j+1))),
+            timestamp = datetime.now()-relativedelta(days=22/(j+1))
+            rx = {'timestamp':timestamp.timestamp()*1000,
                   'has_pneumonia':boolean[randint(0,1)], 'pneumonia_subtype':pneumonia[randint(0,2)], 'test_type':tipo_rx[randint(0,2)]}
             chest_rxs.append(rx)
         
         
         n_cu = randint(1,4)
         for j in range(n_cu):
-            cu = {'_id': str(i), 'timestamp':str(datetime.now()-relativedelta(days=22/(j+1))) ,'is_icu_candidate':boolean[randint(0,1)], 
+            timestamp = datetime.now()-relativedelta(days=22/(j+1))
+            cu = {'timestamp':timestamp.timestamp()*1000 ,'is_icu_candidate':boolean[randint(0,1)], 
                   'temperature_celsius':randint(35,42), 'blood_pressure_systolic':randint(120,160),
                   'blood_pressure_diastolic':randint(120,160), 'heart_rate': randint(50,120),
                   'respiratory_rate':randint(15,30), "glasgow_coma_scale_score":randint(10,20),
@@ -90,33 +100,32 @@ def dummy_data():
         
         n_tests = randint(1,5)
         for j in range(n_tests): # numero de tests por paciente
-            timestamp = j
+            timestamp = datetime.now()-relativedelta(days=10/(j+1))
             raw_text = 'nadaandanaa'
             concrete_result = []
             for k in range(0,3): # numero de parametros por test
                 parameter_key = parametros[k]
                 value = j*70 - 2**j + 100**random()
                 out_of_bounds = [False,True]
-                _id = i*j*k
                 param = {'parameter_key': parameter_key, 'value': value, 'is_out_of_bounds': out_of_bounds[randint(0,1)]}
                 concrete_result.append(param)
-            test = {'items': concrete_result, '_id': _id,'timestamp': timestamp, 'text_raw': raw_text}
+            test = {'items': concrete_result, 'timestamp': timestamp.timestamp()*1000, 'text_raw': raw_text}
             test_paciente.append(test)
         
         n_pc = randint(0, 2)
         for j in range(n_pc):
             pc = {'name': prev_contitions[randint(0,3)],'extra_info': {'insulin_units': 2},'comments': 'bla bla'}
             previous_conditions.append(pc)
-    
-        patient = {'_id': str(i),
-                   'patient_id':str(i),
+        
+
+        patient = {  'patient_id':str(i),
                      'health_provider_id': randint(1,3),
-                     'gender': randint(1,3),
+                     'gender': gender[randint(0,1)],
                      'ethnicity': ethnicity[randint(0,3)],
-                     'date_of_birth': str(datetime.now()-relativedelta(years=randint(5,85))),
-                     'date_of_first_symptoms': str(datetime.now()-relativedelta(days=randint(25,40))),
-                     'date_of_admission': str(datetime.now()-relativedelta(days=randint(0,10))),
-                     'date_of_discharge': str(discharge[randint(0,1)]),
+                     'date_of_birth': birth_date.timestamp()*1000,
+                     'date_of_first_symptoms': first_symptomps_date.timestamp() * 1000,
+                     'date_of_admission': admission_date.timestamp() * 1000,
+                     'date_of_discharge': discharge[randint(0,1)],
                      'is_deceased': boolean[randint(0,1)],
                      'height_cm': randint(150, 200),
                      'weight_kg': randint(50, 100),
@@ -134,9 +143,9 @@ def dummy_data():
 
 DD = dummy_data()
 
-archivo = open("dummy_data.txt","w")
+archivo = open("dummy_dataV2.txt","w")
 archivo.write(str((DD)))
 archivo.close()
 
-with open('dummy_data.txt', 'w') as outfile:
+with open('dummy_dataV2.txt', 'w') as outfile:
     json.dump(DD, outfile)
